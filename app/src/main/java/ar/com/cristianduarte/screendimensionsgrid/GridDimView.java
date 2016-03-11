@@ -45,16 +45,6 @@ public class GridDimView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        /*
-        canvas.drawLine(realDimensionPx.dimension(R.dimen.margin_5_times), 100,
-                        realDimensionPx.dimension(R.dimen.margin_5_times), 1000, gridLinePaint);
-        canvas.drawLine(bucketDimensionPx.dimension(R.dimen.margin_5_times), 100,
-                bucketDimensionPx.dimension(R.dimen.margin_5_times), 1000, gridLinePaint2);
-
-        canvas.drawLine(realDimensionPx.dimension(R.dimen.activity_horizontal_margin), 100,
-                realDimensionPx.dimension(R.dimen.activity_horizontal_margin), 600, gridLinePaint);
-        canvas.drawLine(bucketDimensionPx.dimension(R.dimen.activity_horizontal_margin), 400,
-                bucketDimensionPx.dimension(R.dimen.activity_horizontal_margin), 1000, gridLinePaint2);*/
 
         Log.d("CRAZY", "80dp withCalc : " + realDimensionPx.dimension(R.dimen.margin_5_times) + " withGetDime: " + bucketDimensionPx.dimension(R.dimen.margin_5_times));
         Log.d("CRAZY", "80dp withCalc : " + realDimensionPx.dimension(R.dimen.activity_horizontal_margin) + " withGetDime: " + bucketDimensionPx.dimension(R.dimen.activity_horizontal_margin));
@@ -78,22 +68,6 @@ public class GridDimView extends View {
         gridLinePaint.setColor(res.getColor(R.color.greenTranslucid));
         gridLinePaint2 = new Paint();
         gridLinePaint2.setColor(res.getColor(R.color.redTranslucid));
-    }
-
-    public int dpToPx(int dp) {
-        DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
-        int px = Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
-        return px;
-    }
-
-    public int pxToDp(int px) {
-        DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
-        int dp = Math.round(px / (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
-        return dp;
-    }
-
-    public float getDimensionInDp(@DimenRes int id) {
-        return res.getDimension(id) / res.getDisplayMetrics().density;
     }
 
     interface DimensionPx {
