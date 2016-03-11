@@ -64,6 +64,9 @@ public class GridDimView extends View {
         for (float x = 0; x < getMeasuredWidth(); x=x+margin) {
             canvas.drawLine(x, 0, x, measuredHeight, gridLinePaint);
         }
+        for (float y = 0; y < measuredHeight; y=y+margin) {
+            canvas.drawLine(0, y, getMeasuredWidth(), y, gridLinePaint2);
+        }
     }
 
     private void init() {
@@ -72,11 +75,10 @@ public class GridDimView extends View {
         bucketDimensionPx = new BucketDimensionPx(res);
 
         gridLinePaint = new Paint();
-        gridLinePaint.setColor(Color.GREEN);
+        gridLinePaint.setColor(res.getColor(R.color.greenTranslucid));
         gridLinePaint2 = new Paint();
-        gridLinePaint2.setColor(Color.RED);
+        gridLinePaint2.setColor(res.getColor(R.color.redTranslucid));
     }
-
 
     public int dpToPx(int dp) {
         DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
