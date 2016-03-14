@@ -12,9 +12,9 @@ public class GridTestActivity extends AppCompatActivity {
         setContentView(R.layout.activity_grid_test);
 
         Intent intent = new Intent(this, GridService.class);
-        if(!stopService(intent)) {
+        //if(!stopService(intent)) {
             startService(intent);
-        }
+        //}
 
     }
 
