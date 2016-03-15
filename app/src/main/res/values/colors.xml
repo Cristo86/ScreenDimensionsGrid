@@ -6,6 +6,7 @@
 
     <color name="redTranslucid">#7FFF0000</color>
     <color name="greenTranslucid">#7F00FF00</color>
+    <color name="green_dark">#1b5e20</color>
     <color name="blueTranslucid">#7F0000FF</color>
 
 </resources>

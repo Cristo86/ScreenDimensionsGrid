@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">ScreenDimensionsGrid</string>
+    <string name="activity_name">Grid Config</string>
 </resources>

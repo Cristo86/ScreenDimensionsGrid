@@ -6,6 +6,7 @@ import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Typeface;
 import android.support.annotation.DimenRes;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
@@ -19,6 +20,9 @@ public class GridDimView extends View {
 
     private Paint gridLinePaint;
     private Paint gridLinePaint2;
+
+    private Paint gridImportantLinePaint;
+
     private Resources res;
 
     private DimensionPx bucketDimensionPx;
@@ -54,20 +58,63 @@ public class GridDimView extends View {
         for (float x = 0; x < getMeasuredWidth(); x=x+margin) {
             canvas.drawLine(x, 0, x, measuredHeight, gridLinePaint);
         }
+        // remark the first one
+        gridLinePaint.setStrokeWidth(res.getDimension(R.dimen.strong_stroke_w));
+        canvas.drawLine(margin, 0, margin, measuredHeight, gridLinePaint);
+        gridLinePaint.setStrokeWidth(1);
         for (float y = 0; y < measuredHeight; y=y+margin) {
             canvas.drawLine(0, y, getMeasuredWidth(), y, gridLinePaint2);
         }
+
+        canvas.drawText("16dp", margin + 10, margin, gridLinePaint);
+
+        int w = getMeasuredWidth();
+        int textH = res.getDimensionPixelSize(R.dimen.dimensions_text_height);
+        canvas.drawLine(0, measuredHeight / 2, getMeasuredWidth(), measuredHeight / 2, gridImportantLinePaint);
+        canvas.drawText("" + w + "px | " + bucketDimensionPx.pxToDpInt(w) + "dp" + " (bucket)",
+                margin, measuredHeight / 2 - textH, gridImportantLinePaint);
+        canvas.drawText(
+                "" + w + "px | " + realDimensionPx.pxToDpInt(w) + "dp | " + realDimensionPx.dpi() + "dpi | "
+                        + realDimensionPx.pxToCm(w) + "cm"
+                        + " (real)",
+                margin, measuredHeight / 2 + textH, gridImportantLinePaint);
+
+        canvas.save();
+        canvas.rotate(90);
+
+        canvas.drawText("" + measuredHeight + "px | " + realDimensionPx.pxToDp(measuredHeight) + " dp | "
+                + realDimensionPx.pxToCm(measuredHeight) + "cm + "
+                + realDimensionPx.pxToCm(realDimensionPx.dimension(R.dimen.statusbar_height))
+                + "cm (" + realDimensionPx.pxToDp(realDimensionPx.dimension(R.dimen.statusbar_height))
+                + "dp) "
+                + " = " + (realDimensionPx.pxToCm(realDimensionPx.dimension(R.dimen.statusbar_height)) + realDimensionPx.pxToCm(measuredHeight))
+                + "cm"
+                , realDimensionPx.dimension(R.dimen.actionbar_height), -w + textH, gridImportantLinePaint);
+
+        canvas.drawLine(0, measuredHeight / 2, getMeasuredWidth(), measuredHeight / 2, gridImportantLinePaint);
+
+        canvas.restore();
+
     }
 
     private void init() {
+
         res = getContext().getResources();
         realDimensionPx = new RealDimensionPx(res);
         bucketDimensionPx = new BucketDimensionPx(res);
 
         gridLinePaint = new Paint();
         gridLinePaint.setColor(res.getColor(R.color.greenTranslucid));
+        gridLinePaint.setTextSize(res.getDimensionPixelSize(R.dimen.dimensions_text_size));
         gridLinePaint2 = new Paint();
         gridLinePaint2.setColor(res.getColor(R.color.redTranslucid));
+
+        gridImportantLinePaint = new Paint();
+        gridImportantLinePaint.setColor(res.getColor(R.color.green_dark));
+        gridImportantLinePaint.setStrokeWidth(res.getDimension(R.dimen.strong_stroke_w));
+        gridImportantLinePaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
+        gridImportantLinePaint.setTextSize(res.getDimensionPixelSize(R.dimen.dimensions_text_size));
+
     }
 
     interface DimensionPx {
@@ -76,6 +123,8 @@ public class GridDimView extends View {
         float pxToDp(float px);
         int dpToPxInt(float dp);
         int pxToDpInt(float px);
+        float dpi();
+        float pxToCm(float px);
     }
 
     static class BucketDimensionPx implements  DimensionPx {
@@ -90,11 +139,11 @@ public class GridDimView extends View {
         }
         @Override
         public float dpToPx(float dp) {
-            return dp * (displayMetrics.density / DisplayMetrics.DENSITY_DEFAULT);
+            return dp * (displayMetrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
         }
         @Override
         public float pxToDp(float px) {
-            return px / (displayMetrics.density / DisplayMetrics.DENSITY_DEFAULT);
+            return px / (displayMetrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
         }
         @Override
         public int dpToPxInt(float dp) {
@@ -103,6 +152,25 @@ public class GridDimView extends View {
         @Override
         public int pxToDpInt(float px) {
             return Math.round(pxToDp(px));
+        }
+        @Override
+        public float dpi() { return displayMetrics.xdpi; }
+        @Override
+        public float pxToCm(float px) {
+            float dp = pxToDp(px);
+            return (float) 2.54 * (px / (160 * (px/dp)));
+            /*
+                Given equation
+                px = dp * (dpi / 160)
+                so...
+                px = dp * ((dots/inch) / 160)
+                px / dp = ((dots/inch) / 160)
+                160 * (px / dp) = dots/inch
+                inch = dots / (160 * (px / dp))
+
+                those dots are the same pixels
+                inch  = px / (160 * (px / dp))
+            * */
         }
     }
 
@@ -134,6 +202,13 @@ public class GridDimView extends View {
         @Override
         public int pxToDpInt(float px) {
             return Math.round(pxToDp(px));
+        }
+        @Override
+        public float dpi() { return displayMetrics.xdpi; }
+        @Override
+        public float pxToCm(float px) {
+            float dp = pxToDp(px);
+            return (float) 2.54 * (px / (160 * (px/dp)));
         }
     }
 

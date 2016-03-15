@@ -9,6 +9,7 @@ import android.graphics.PixelFormat;
 import android.os.IBinder;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.app.TaskStackBuilder;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.NotificationCompat;
 import android.view.Gravity;
 import android.view.View;
@@ -17,7 +18,8 @@ import android. view.WindowManager;
 public class GridService extends Service {
 
     private WindowManager windowManager;
-
+    public static final String BROADCAST_TURNED_OFF = "TurnedOff";
+    public static final String STOP_EXTRA = "STOP";
     private View v;
 
     private static final int NOTIFICATION_ID = 123;
@@ -28,7 +30,9 @@ public class GridService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+    }
 
+    private void grid() {
         windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
 
         //v = new View(this);
@@ -54,39 +58,46 @@ public class GridService extends Service {
         params.y = 100;
 
         windowManager.addView(v, params);
-
-        showNotification();
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         int ret = super.onStartCommand(intent, flags, startId);
 
-        if (intent.getBooleanExtra("STOP", false)) {
-            NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-            mNotificationManager.cancel(NOTIFICATION_ID);
+        if (intent.getBooleanExtra(STOP_EXTRA, false)) {
+
+            Intent tellUi = new Intent();
+            tellUi.setAction(BROADCAST_TURNED_OFF);
+            LocalBroadcastManager.getInstance(this).sendBroadcast(tellUi);
+
             stopSelf();
+        } else {
+            grid();
+            showNotification();
         }
         return ret;
     }
+
+
 
     private void showNotification() {
         //NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this).setSmallIcon(R.mipmap.ic_launcher);
         NotificationCompat.Builder mBuilder =
                 (NotificationCompat.Builder) new NotificationCompat.Builder(this)
-                        .setSmallIcon(R.mipmap.ic_launcher)
-                        .setContentTitle("My notification")
-                        .setContentText("Hello World!")
+                        .setSmallIcon(R.drawable.ic_grid_notification)
+                        .setContentTitle("On Screen Grid")
+                        .setContentText("Grid is running")
                 .setOngoing(true);
+
         // Creates an explicit intent for an Activity in your app
         Intent resultIntent = new Intent(this, GridTestActivity.class);
 
-
-        //mBuilder.addAction(new android.support.v4.app.NotificationCompat.Action())
         Intent stopAction = new Intent(this, GridService.class);
-        stopAction.putExtra("STOP", true);
+        stopAction.putExtra(STOP_EXTRA, true);
+        // http://stackoverflow.com/questions/2882459/getextra-from-intent-launched-from-a-pendingintent#2882594
+        stopAction.setAction("" + Math.random());
         PendingIntent pi = PendingIntent.getService(this, 123, stopAction, 0);
-        mBuilder.addAction(R.mipmap.ic_launcher, "STOP", pi);
+        mBuilder.addAction(R.drawable.ic_stop, "Stop Grid", pi);
         // The stack builder object will contain an artificial back stack for the
         // started Activity.
         // This ensures that navigating backward from the Activity leads out of
@@ -95,6 +106,7 @@ public class GridService extends Service {
         // Adds the back stack for the Intent (but not the Intent itself)
         stackBuilder.addParentStack(GridTestActivity.class);
         // Adds the Intent that starts the Activity to the top of the stack
+
         stackBuilder.addNextIntent(resultIntent);
         PendingIntent resultPendingIntent =
                 stackBuilder.getPendingIntent(
@@ -111,12 +123,13 @@ public class GridService extends Service {
     public void onDestroy() {
         super.onDestroy();
         if (v != null) windowManager.removeView(v);
+
+        NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        mNotificationManager.cancel(NOTIFICATION_ID);
     }
 
     @Override
     public IBinder onBind(Intent intent) {
-        // TODO: Return the communication channel to the service.
         return null;
-        //throw new UnsupportedOperationException("Not yet implemented");
     }
 }

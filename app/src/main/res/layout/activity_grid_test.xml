@@ -3,22 +3,21 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingEnd="@dimen/activity_horizontal_margin"
+    android:paddingStart="@dimen/activity_horizontal_margin"
     tools:context="ar.com.cristianduarte.screendimensionsgrid.GridTestActivity">
 
-    <TextView
+    <android.support.v7.widget.SwitchCompat
+        android:id="@+id/grid_switch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!" />
-
-    <ar.com.cristianduarte.screendimensionsgrid.GridDimView android:id="@+id/grid"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
-    <View
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_marginLeft="16dp"
-        android:layout_centerVertical="true"
-        android:background="#99889988"/>
+        android:text="Grid"
+        android:textOn="Running"
+        android:textOff="Off"
+        />
 
 </RelativeLayout>
