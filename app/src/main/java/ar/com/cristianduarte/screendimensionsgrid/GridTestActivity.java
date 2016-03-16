@@ -1,6 +1,7 @@
 package ar.com.cristianduarte.screendimensionsgrid;
 
 import android.annotation.TargetApi;
+import android.app.ActivityManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -29,6 +30,10 @@ public class GridTestActivity extends AppCompatActivity {
         setContentView(R.layout.activity_grid_test);
 
         mGridSwitch = (SwitchCompat) findViewById(R.id.grid_switch);
+        if (isServiceRunning()) {
+            mGridSwitch.setChecked(true);
+        }
+
         mOnCheckedChangeListener = new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -102,6 +107,16 @@ public class GridTestActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mBr);
+    }
+
+    private boolean isServiceRunning() {
+        ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)){
+            if(GridService.class.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }

@@ -35,8 +35,9 @@ public class GridService extends Service {
     private void grid() {
         windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
 
-        //v = new View(this);
-        //v.setBackgroundColor(Color.BLUE);
+        if (v!=null) {
+            windowManager.removeView(v); // remove the old
+        }
         v = new GridDimView(this);
         WindowManager.LayoutParams params = new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.MATCH_PARENT,
